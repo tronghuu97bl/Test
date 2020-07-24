@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/nav_personal">
+
+    <fragment
+        android:id="@+id/nav_personal"
+        android:name="com.tth.test.ui.home.HomeFragment"
+        android:label="@string/menu_personal"
+        tools:layout="@layout/fragment_personal" />
+
+    <fragment
+        android:id="@+id/nav_works"
+        android:name="com.tth.test.ui.works.WorksFragment"
+        android:label="@string/menu_works"
+        tools:layout="@layout/fragment_works" />
+
+    <fragment
+        android:id="@+id/nav_friend"
+        android:name="com.tth.test.ui.friend.FriendFragment"
+        android:label="@string/menu_friend"
+        tools:layout="@layout/fragment_friend" />
+    <fragment
+        android:id="@+id/nav_group"
+        android:name="com.tth.test.ui.friend.FriendFragment"
+        android:label="@string/menu_group"
+        tools:layout="@layout/fragment_group" />
+    <fragment
+        android:id="@+id/nav_setting"
+        android:name="com.tth.test.ui.friend.FriendFragment"
+        android:label="@string/menu_setting"
+        tools:layout="@layout/fragment_setting" />
+
+    <fragment
+        android:id="@+id/nav_about"
+        android:name="com.tth.test.ui.friend.FriendFragment"
+        android:label="@string/menu_about"
+        tools:layout="@layout/fragment_about" />
+</navigation>
