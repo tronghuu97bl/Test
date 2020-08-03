@@ -1,4 +1,4 @@
-package com.tth.test.ui.home;
+package com.tth.test.ui.personal;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

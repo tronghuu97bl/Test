@@ -1,4 +1,4 @@
-package com.tth.test.ui.home;
+package com.tth.test.ui.personal;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,9 +22,9 @@ public class HomeAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return PlaceholderFragment2.newInstance(position);
-        } else {
             return PlaceholderFragment.newInstance(position);
+        } else {
+            return PlaceholderFragment2.newInstance(position);
         }
     }
 
@@ -33,9 +33,9 @@ public class HomeAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 1:
-                return String.valueOf("Note");
-            default:
                 return String.valueOf("Work");
+            default:
+                return String.valueOf("Note");
         }
     }
 
