@@ -15,15 +15,18 @@ import com.tth.test.R;
 public class HomeFragment extends Fragment {
     private ViewPager viewPager;
     private TabLayout tabLayout;
-    private HomeAdapter homeAdapter;
+    private HomeAdapter adapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_personal, container, false);
         viewPager = root.findViewById(R.id.viewPager);
         tabLayout = root.findViewById(R.id.tabLayout);
-        homeAdapter = new HomeAdapter(getChildFragmentManager(), 1);
-        viewPager.setAdapter(homeAdapter);
+        adapter = new HomeAdapter(getChildFragmentManager());
+        adapter.AddFragment(new NoteFragment(),"Ghi Chú");
+        adapter.AddFragment(new WorkFragment(),"Nhiệm Vụ");
+
+        viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         return root;
     }

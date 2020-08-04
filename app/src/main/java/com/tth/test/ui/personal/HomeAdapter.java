@@ -13,35 +13,47 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.tth.test.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HomeAdapter extends FragmentPagerAdapter {
-    public HomeAdapter(@NonNull FragmentManager fm, int behavior) {
-        super(fm, behavior);
+    private final List<Fragment> listfragmnet = new ArrayList<>();
+    private final List<String> title = new ArrayList<>();
+
+    public HomeAdapter(@NonNull FragmentManager fm) {
+        super(fm);
     }
 
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        if (position == 0) {
+        /*if (position == 0) {
             return PlaceholderFragment.newInstance(position);
         } else {
             return PlaceholderFragment2.newInstance(position);
-        }
+        }*/
+        return listfragmnet.get(position);
     }
 
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        switch (position) {
+        /*switch (position) {
             case 1:
                 return String.valueOf("Work");
             default:
                 return String.valueOf("Note");
-        }
+        }*/
+        return title.get(position);
+    }
+    public void AddFragment(Fragment fragment, String tit){
+        listfragmnet.add(fragment);
+        title.add(tit);
     }
 
     @Override
     public int getCount() {
-        return 2;
+        return title.size();
     }
 
     //moi fragment con, tao ra 1 class rieng
