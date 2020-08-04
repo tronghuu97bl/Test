@@ -8,7 +8,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tth.test.R;
@@ -24,12 +24,13 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
         this.work_last_modify = work_last_modify;
     }
 
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context=parent.getContext();
         LayoutInflater inflater= LayoutInflater.from(context);
-        View workView = inflater.inflate(R.layout.item_work, parent,false);
+        View workView = inflater.inflate(R.layout.item_note, parent,false);
         ViewHolder viewHolder = new ViewHolder(workView);
         return viewHolder;
     }
