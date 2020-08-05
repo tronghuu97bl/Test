@@ -12,16 +12,18 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tth.test.R;
+import com.tth.test.model.Work;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
     private Context context;
-    private ArrayList work_title, work_last_modify;
+    private List<Work> work;
 
-    WorkAdapter(ArrayList work_title,  ArrayList work_last_modify) {
-        this.work_title = work_title;
-        this.work_last_modify = work_last_modify;
+    WorkAdapter(Context context,List<Work> work) {
+        this.work = work;
+        this.context=context;
     }
 
     @NonNull
@@ -36,13 +38,14 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.editText.setText(String.valueOf(work_last_modify.get(position)));
-        holder.checkBox.setText(String.valueOf(work_title.get(position)));
+        Work works = work.get(position);
+        holder.checkBox.setText(works.getContent());
+        holder.editText.setText(works.getLast_mdf());
     }
 
     @Override
     public int getItemCount() {
-        return work_title.size();
+        return work.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -50,8 +53,8 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
         public EditText editText;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            checkBox=itemView.findViewById(R.id.checkBox);
-            editText=itemView.findViewById(R.id.textView);
+            checkBox=itemView.findViewById(R.id.cb_work_content);
+            editText=itemView.findViewById(R.id.edittext_work_mdf);
         }
     }
 }
