@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -40,7 +41,7 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Work works = work.get(position);
         holder.checkBox.setText(works.getContent());
-        holder.editText.setText(works.getLast_mdf());
+        holder.textView.setText(works.getLast_mdf());
     }
 
     @Override
@@ -50,11 +51,11 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public CheckBox checkBox;
-        public EditText editText;
+        public TextView textView;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             checkBox=itemView.findViewById(R.id.cb_work_content);
-            editText=itemView.findViewById(R.id.edittext_work_mdf);
+            textView=itemView.findViewById(R.id.tv_work_mddf);
         }
     }
 }

@@ -26,6 +26,7 @@ import com.tth.test.R;
 import com.tth.test.db.DBHelper;
 import com.tth.test.model.Note;
 import com.tth.test.model.Work;
+import com.tth.test.util.KeyboardUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,6 @@ public class WorkFragment extends Fragment {
                 addWork.showPopUpWindow(view);
             }
         });
-
         WorkAdapter workAdapter = new WorkAdapter(getContext(),work);
         recyclerView.setAdapter(workAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(root.getContext()));
