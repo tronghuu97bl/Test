@@ -34,4 +34,9 @@ public class DetailNoteActivity extends AppCompatActivity {
             imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
         }
     }
+
+    @Override
+    public void finish() {
+        super.finish();
+    }
 }

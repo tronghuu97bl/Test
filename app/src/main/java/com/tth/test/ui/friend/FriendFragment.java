@@ -48,7 +48,7 @@ public class FriendFragment extends Fragment {
             public void onClick(View view, int position) {
                 Toast.makeText(view.getContext(), "onClick phần tử " + position, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(), DetailNoteActivity.class);
-                intent.putExtra("ABC","abcdefghijk");
+                intent.putExtra("ABC", "abcdefghijk");
                 startActivity(intent);
             }
 

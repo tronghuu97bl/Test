@@ -86,11 +86,6 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put(WORK_MDF, work.getLast_mdf());
         cv.put(WORK_CHECK, work.getChecked());
         long result = db.insert(TABLE_WORK_NAME, null, cv);
-        if (result == -1) {
-            Toast.makeText(context, "Add Work Failed", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(context, "Add Work Success", Toast.LENGTH_SHORT).show();
-        }
         db.close();
     }
 
@@ -233,17 +228,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 new String[]{String.valueOf(work.getWorkid())});
         db.close();
     }
-
-    /*public Cursor readAllData_Work() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_WORK_NAME;
-        db = this.getReadableDatabase();
-        Cursor cursor = null;
-        if (db != null) {
-            cursor = db.rawQuery(query, null);
-        }
-        return cursor;
-    }*/
 
     public void createDefaultNotesIfNeed() {
         int count = this.getNotesCount();
