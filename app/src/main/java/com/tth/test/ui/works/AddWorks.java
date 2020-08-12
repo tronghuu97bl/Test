@@ -13,27 +13,27 @@ import android.widget.Toast;
 
 import com.tth.test.R;
 import com.tth.test.db.DBHelper;
-import com.tth.test.model.Work;
+import com.tth.test.model.Works;
 import com.tth.test.util.KeyboardUtils;
 
 import java.util.Calendar;
 import java.util.Date;
 
-public class AddWork {
+public class AddWorks {
     public void showPopUpWindow(final View view) {
         LayoutInflater layoutInflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
-        final View popupView = layoutInflater.inflate(R.layout.activity_add_work, null);
+        final View popupView = layoutInflater.inflate(R.layout.activity_add_works, null);
         int width = LinearLayout.LayoutParams.MATCH_PARENT;
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
 
         boolean focusable = true;
 
-        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
         popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
-        final TextView test = popupView.findViewById(R.id.editTextTextMultiLine);
+        final TextView test = popupView.findViewById(R.id.edt_works);
         //test.setText(R.string.tv_test);
-        Button button = popupView.findViewById(R.id.button_settime);
-        Button button2 = popupView.findViewById(R.id.button_hoantat);
+        Button button = popupView.findViewById(R.id.btn_works_time);
+        Button button2 = popupView.findViewById(R.id.btn_works_done);
         button.setText("Đặt nhắc nhở");
         button2.setText("Hoàn tất");
         //set time
@@ -48,11 +48,11 @@ public class AddWork {
             @Override
             public void onClick(View view) {
                 DBHelper dbHelper = new DBHelper(view.getContext());
-                Date currentime = Calendar.getInstance().getTime();
+                Date current_time = Calendar.getInstance().getTime();
                 String content = test.getText().toString();
-                String last_modify = currentime.toString();
-                Work work = new Work(content,last_modify,0);
-                dbHelper.addWork(work);
+                String last_modify = current_time.toString();
+                Works works = new Works(content,last_modify,0);
+                dbHelper.addWorks(works);
             }
         });
 

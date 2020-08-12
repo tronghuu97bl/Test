@@ -1,11 +1,19 @@
 package com.tth.test.ui.personal;
 
+import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,36 +23,40 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tth.test.R;
+import com.tth.test.db.DBHelper;
+import com.tth.test.model.Note;
+import com.tth.test.model.Work;
+import com.tth.test.util.KeyboardUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class WorkFragment extends Fragment {
-    ArrayList<String> titile, last_modify;
-
+    List<Work> work;
+    DBHelper dbHelper;
+    ImageView empty_imageview;
+    TextView no_data;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_work, container, false);
-        titile = new ArrayList<>();
-        last_modify = new ArrayList<>();
         RecyclerView recyclerView = root.findViewById(R.id.rv_work);
-        WorkAdapter workAdapter = new WorkAdapter(titile, last_modify);
-
+        work = new ArrayList<>();
+        dbHelper =new DBHelper(getActivity());
+        dbHelper.createDefaultWorkIfNeed();
+        work=dbHelper.getAllWork();
+        //button add
         FloatingActionButton add_button = root.findViewById(R.id.add_button);
-        ImageView empty_imageview = root.findViewById(R.id.empty_imageview);
-        TextView no_data = root.findViewById(R.id.no_data);
+        empty_imageview = root.findViewById(R.id.empty_imageview);
+        no_data = root.findViewById(R.id.no_data);
         add_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Log.d("Test", "onClickListener ist gestartet");
-                //Toast.makeText(getContext(), "abc", Toast.LENGTH_SHORT).show();
-                /*Intent intent = new Intent(getActivity(), AddWorkActivity.class);
-                startActivity(intent);*/
                 AddWork addWork = new AddWork();
                 addWork.showPopUpWindow(view);
             }
         });
-
+        WorkAdapter workAdapter = new WorkAdapter(getContext(),work);
         recyclerView.setAdapter(workAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(root.getContext()));
         return root;

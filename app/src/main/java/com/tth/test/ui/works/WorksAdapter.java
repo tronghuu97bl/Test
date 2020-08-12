@@ -13,17 +13,18 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tth.test.R;
-import com.tth.test.model.Work;
+import com.tth.test.model.Works;
+import com.tth.test.model.Works;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
+public class WorksAdapter extends RecyclerView.Adapter<WorksAdapter.ViewHolder> {
     private Context context;
-    private List<Work> work;
+    private List<Works> works;
 
-    WorkAdapter(Context context,List<Work> work) {
-        this.work = work;
+    WorksAdapter(Context context, List<Works> works) {
+        this.works = works;
         this.context=context;
     }
 
@@ -40,14 +41,14 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Work works = work.get(position);
-        holder.checkBox.setText(works.getContent());
-        holder.textView.setText(works.getLast_mdf());
+        Works work = works.get(position);
+        holder.checkBox.setText(work.getContent());
+        holder.textView.setText(work.getLast_mdf());
     }
 
     @Override
     public int getItemCount() {
-        return work.size();
+        return works.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
