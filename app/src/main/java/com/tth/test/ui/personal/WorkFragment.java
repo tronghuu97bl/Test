@@ -89,7 +89,7 @@ public class WorkFragment extends Fragment {
         recyclerView.setAdapter(workAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(root.getContext()));
 
-        //vuot de xoa
+        //VUOT DE XOA
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDelete(workAdapter));
         itemTouchHelper.attachToRecyclerView(recyclerView);
 

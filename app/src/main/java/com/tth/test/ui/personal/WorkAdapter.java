@@ -60,9 +60,9 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
     }
 
     public void deleteItem(int position) {
-        work.remove(position);
         DBHelper dbHelper = new DBHelper(getContext());
-        Work wo = dbHelper.getWork(position);
+        Work wo = work.get(position);
+        work.remove(position);
         dbHelper.deleteWork(wo);
         notifyItemRemoved(position);
     }
