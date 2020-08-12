@@ -5,12 +5,25 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.GridLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tth.test.R;
+import com.tth.test.db.DBHelper;
+import com.tth.test.model.Note;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -18,7 +31,10 @@ import com.tth.test.R;
  * create an instance of this fragment.
  */
 public class NoteFragment extends Fragment {
-
+    List<Note> note;
+    DBHelper dbHelper;
+    ImageView empty_imageview;
+    TextView no_data;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -64,12 +80,29 @@ public class NoteFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_note,container,false);
-        String[] data = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48"};
+        //kb note
+        note = new ArrayList<>();
+        dbHelper = new DBHelper(getActivity());
+        dbHelper.createDefaultNotesIfNeed();
+        note = dbHelper.getAllNotes();
         int numberOfColumns = 2;
         RecyclerView recyclerView = view.findViewById(R.id.rcv_note);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), numberOfColumns) );
-        recyclerView.setAdapter(new NoteAdapter(getActivity(), data));
+        // add btn
+        FloatingActionButton add_button = view.findViewById(R.id.add_button);
+        empty_imageview = view.findViewById(R.id.empty_imageview);
+        no_data = view.findViewById(R.id.no_data);
+        add_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AddNote addNote = new AddNote();
+                addNote.showPopUpWindow(view);
+            }
+        });
+        //xu ly onLongClick view
+
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numberOfColumns, StaggeredGridLayoutManager.VERTICAL));
+        recyclerView.setAdapter(new NoteAdapter(getActivity(), note));
         return view;
     }
 }

@@ -1,12 +1,10 @@
 package com.tth.test.ui.personal;
 
-import android.content.Intent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
@@ -22,8 +20,7 @@ import com.tth.test.util.KeyboardUtils;
 import java.util.Calendar;
 import java.util.Date;
 
-public class ModifyNote {
-    Note note = new Note();
+public class AddNote {
     public void showPopUpWindow(final View view) {
         LayoutInflater layoutInflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
         final View popupView = layoutInflater.inflate(R.layout.activity_add_note, null);
@@ -58,7 +55,7 @@ public class ModifyNote {
                 String noteContent = content.getText().toString();
                 String last_modify = current_time.toString();
                 Note note = new Note(noteTitle,noteContent, last_modify,0);
-                dbHelper.updateNote(note);
+                dbHelper.addNote(note);
             }
         });
 

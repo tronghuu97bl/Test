@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <android.inputmethodservice.ExtractEditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Công việc của nhóm show ở đây"
+            android:hint="show group job"></android.inputmethodservice.ExtractEditText>
+    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:hint="Mon Aug 10 9:01:05 2020"></TextView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
