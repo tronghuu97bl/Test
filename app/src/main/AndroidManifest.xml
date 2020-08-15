@@ -9,9 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.AddWorkActivity"
-            android:theme="@style/Theme.AppCompat.Dialog">
-        </activity>
+        <activity
+            android:name=".ui.AddWorkActivity"
+            android:theme="@style/Theme.AppCompat.Dialog"></activity>
         <activity android:name=".ui.DetailNoteActivity" />
         <activity
             android:name=".MainActivity"

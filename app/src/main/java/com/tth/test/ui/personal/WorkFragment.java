@@ -17,6 +17,9 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +58,8 @@ import com.tth.test.util.TimeManagementImpl;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -64,7 +69,8 @@ public class WorkFragment extends Fragment {
     ImageView empty_imageview;
     TextView no_data;
     WorkAdapter workAdapter;
-
+    String time = "";
+    boolean anhien = true;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -94,7 +100,7 @@ public class WorkFragment extends Fragment {
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
         //EVEN CLICK ITEM RECYCLE VIEW
-        recyclerView.addOnItemTouchListener(new WorkFragment.RecycleTouchListener(getContext(), recyclerView, new WorkFragment.RecycleTouchListener.ClickListener() {
+        /*recyclerView.addOnItemTouchListener(new WorkFragment.RecycleTouchListener(getContext(), recyclerView, new WorkFragment.RecycleTouchListener.ClickListener() {
             @Override
             //EDIT WORK
             public void onClick(View view, int position) {
@@ -106,8 +112,8 @@ public class WorkFragment extends Fragment {
             public void onLongClick(View view, int position) {
 
             }
-        }));
-
+        }));*/
+        setHasOptionsMenu(true);
         return root;
     }
 
@@ -115,8 +121,9 @@ public class WorkFragment extends Fragment {
         dbHelper.addWork(work1);
         work.add(work1);
         workAdapter.notifyDataSetChanged();
-        //workAdapter.notifyItemInserted(0);
+        time = "";
     }
+
     //POPUP ADD WORK
     public void showPopUpWindow(final View view) {
         LayoutInflater layoutInflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
@@ -150,14 +157,17 @@ public class WorkFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (time.equals("") == false) {
+                    button.setText(time);
+                }
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if(editable.toString().trim().length()>0){
+                if (editable.toString().trim().length() > 0) {
                     button2.setTextColor(Color.GREEN);
                     button2.setEnabled(true);
-                }else{
+                } else {
                     button2.setTextColor(Color.GRAY);
                     button2.setEnabled(false);
                 }
@@ -175,10 +185,8 @@ public class WorkFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 DBHelper dbHelper = new DBHelper(view.getContext());
-                Date currentime = Calendar.getInstance().getTime();
                 String content = test.getText().toString();
-                String last_modify = currentime.toString();
-                Work wo = new Work(content, last_modify, 0);
+                Work wo = new Work(content, time, 0);
                 addwork(wo);
                 popupWindow.dismiss();
             }
@@ -200,6 +208,7 @@ public class WorkFragment extends Fragment {
         });
         KeyboardUtils.showKeyboard2(test);
     }
+
     //POPUP EDIT WORK
     public void showPopUpWindowEdit(final View view, final int position) {
         LayoutInflater layoutInflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
@@ -213,21 +222,25 @@ public class WorkFragment extends Fragment {
         //get work
         final Work wo = work.get(position);
         test.setText(wo.getContent());
+        String last = wo.getLast_mdf();
         //LAM MO NEN
         View container = popupWindow.getContentView().getRootView();
         if (container != null) {
             WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
             WindowManager.LayoutParams p = (WindowManager.LayoutParams) container.getLayoutParams();
-            //p.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
-            //p.dimAmount = 0.3f;
+            p.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+            p.dimAmount = 0.3f;
             if (wm != null) {
                 wm.updateViewLayout(container, p);
             }
         }
-
         final Button button = popupView.findViewById(R.id.button_settime);
         final Button button2 = popupView.findViewById(R.id.button_hoantat);
-        button.setText("Đặt nhắc nhở");
+        if (last == "") {
+            button.setText("Đặt nhắc nhở");
+        } else {
+            button.setText(last);
+        }
         button2.setText("Hoàn tất");
         button2.setTextColor(Color.GREEN);
         test.addTextChangedListener(new TextWatcher() {
@@ -237,14 +250,17 @@ public class WorkFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (time.equals("") == false) {
+                    button.setText(time);
+                }
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if(editable.toString().trim().length()>0){
+                if (editable.toString().trim().length() > 0) {
                     button2.setTextColor(Color.GREEN);
                     button2.setEnabled(true);
-                }else{
+                } else {
                     button2.setTextColor(Color.GRAY);
                     button2.setEnabled(false);
                 }
@@ -254,7 +270,7 @@ public class WorkFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(view.getContext(), "abcdefg", Toast.LENGTH_SHORT).show();
+                datePicker();
             }
         });
         //save
@@ -263,7 +279,9 @@ public class WorkFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 wo.setContent(test.getText().toString());
-                wo.setLast_mdf(Calendar.getInstance().getTime().toString());
+                if (time.equals("") == false) {
+                    wo.setLast_mdf(time);
+                }
                 dbHelper.updateWork(wo);
                 workAdapter.notifyItemChanged(position);
                 popupWindow.dismiss();
@@ -279,17 +297,15 @@ public class WorkFragment extends Fragment {
     }
 
     //DATE PICKER, TIME PICKER
-    private void datePicker(){
+    private void datePicker() {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), AlertDialog.THEME_HOLO_LIGHT ,new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), AlertDialog.THEME_HOLO_LIGHT, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String formatDate = String.format("%d/%d/%d", year, month + 1, dayOfMonth);
-                //tvSelectDate.setText(formatDate);
-                Toast.makeText(getContext(), formatDate, Toast.LENGTH_SHORT).show();
+                String formatDate = String.format("%d/%d/%d", dayOfMonth, month + 1, year);
                 timePicker(formatDate);
             }
         }, year, month, dayOfMonth);
@@ -301,26 +317,21 @@ public class WorkFragment extends Fragment {
         datePickerDialog.show();
     }
 
-    private void timePicker(final String date){
+    private void timePicker(final String date) {
         final Calendar calendar = Calendar.getInstance();
         final int hour = calendar.get(Calendar.HOUR_OF_DAY);
         final int minute = calendar.get(Calendar.MINUTE);
-
         RangeTimePickerDialog timePickerDialog = new RangeTimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                //setDate(String.valueOf(new StringBuilder().append(date).append("/").append(month).append("/").append(year).append("")));
-
-                //String time = getResources().getString(R.string.time_format);
                 String formatTime = String.format("%d:%d", hourOfDay, minute);
-                String dateTime = date + "   " + formatTime;
-                //tvSelectDate.setText(dateTime);
-                Toast.makeText(getContext(), dateTime, Toast.LENGTH_SHORT).show();
+                time = date + " " + formatTime;
             }
         }, hour + 1, minute, false);
         timePickerDialog.setMin(hour + 1, minute);
         timePickerDialog.show();
     }
+
     //click long click
     public static class RecycleTouchListener implements RecyclerView.OnItemTouchListener {
         public static interface ClickListener {
@@ -366,6 +377,68 @@ public class WorkFragment extends Fragment {
         @Override
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.work, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.menu_item_work_1) {
+            Toast.makeText(getContext(), "Tính năng đang cập nhật", Toast.LENGTH_SHORT).show();
+        }
+        if (item.getItemId() == R.id.menu_item_work_2) {
+            if(anhien==true){
+                int aa[] = new int[work.size()];
+                int dem = 0, i = 0;
+                for (Work w : work) {
+                    if (w.getChecked() == 1) aa[dem++] = i;
+                    i++;
+                }
+                for (int j = dem-1; j >=0; j--) {
+                    work.remove(aa[j]);
+                }
+                workAdapter.notifyDataSetChanged();
+                anhien=false;
+                item.setTitle("Hiện nhiệm vụ đã hoàn thành");
+            }else{
+                item.setTitle("Ẩn nhiệm vụ đã hoàn thành");
+                anhien=true;
+                work.removeAll(work);
+                List<Work> lw = new ArrayList<>();
+                lw=dbHelper.getAllWork();
+                work.addAll(lw);
+                workAdapter.notifyDataSetChanged();
+            }
+
+        }
+        if (item.getItemId() == R.id.menu_item_work_3) {
+            Collections.sort(work, new Comparator<Work>() {
+                public int compare(Work obj1, Work obj2) {
+                    return Integer.valueOf(obj1.getWorkid()).compareTo(Integer.valueOf(obj2.getWorkid())); // To compare integer values
+                }
+            });
+            workAdapter.notifyDataSetChanged();
+        }
+        if (item.getItemId() == R.id.menu_item_work_4) {
+            Collections.sort(work, new Comparator<Work>() {
+                public int compare(Work obj1, Work obj2) {
+                    return Integer.valueOf(obj2.getWorkid()).compareTo(Integer.valueOf(obj1.getWorkid())); // To compare integer values
+                }
+            });
+            workAdapter.notifyDataSetChanged();
+        }
+        if (item.getItemId() == R.id.menu_item_work_5) {
+            Collections.sort(work, new Comparator<Work>() {
+                public int compare(Work obj1, Work obj2) {
+                    return obj1.getLast_mdf().compareToIgnoreCase(obj2.getLast_mdf());
+                }
+            });
+            workAdapter.notifyDataSetChanged();
+        }
+        return true;
     }
 
     @Override

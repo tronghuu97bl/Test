@@ -27,23 +27,12 @@ public class HomeAdapter extends FragmentPagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        /*if (position == 0) {
-            return PlaceholderFragment.newInstance(position);
-        } else {
-            return PlaceholderFragment2.newInstance(position);
-        }*/
         return listfragmnet.get(position);
     }
 
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        /*switch (position) {
-            case 1:
-                return String.valueOf("Work");
-            default:
-                return String.valueOf("Note");
-        }*/
         return title.get(position);
     }
     public void AddFragment(Fragment fragment, String tit){

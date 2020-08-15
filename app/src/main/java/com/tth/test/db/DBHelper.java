@@ -1,3 +1,4 @@
+
 package com.tth.test.db;
 
 import android.content.ContentValues;
@@ -12,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import com.tth.test.model.Note;
 import com.tth.test.model.Work;
+import com.tth.test.model.Works;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,12 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String WORK_CONTENT = "work_content";
     private static final String WORK_MDF = "work_last_mdf";
     private static final String WORK_CHECK = "work_checked";
+    // table works - cong viec nhom
+    private static final String TABLE_WORKS_NAME = "works";
+    private static final String WORKS_ID = "works_id";
+    private static final String WORKS_CONTENT = "works_content";
+    private static final String WORKS_MDF = "works_last_mdf";
+    private static final String WORKS_CHECK = "works_check";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAM, null, DATABASE_VERSION);
@@ -48,11 +56,19 @@ public class DBHelper extends SQLiteOpenHelper {
                 NOTE_MDF + " TEXT, " +
                 NOTE_CHECK + " INTEGER)";
         db.execSQL(query);
+        // add table work
         query = "CREATE TABLE " + TABLE_WORK_NAME + "( " +
                 WORK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 WORK_CONTENT + " TEXT, " +
                 WORK_MDF + " TEXT, " +
                 WORK_CHECK + " INTEGER)";
+        db.execSQL(query);
+        //add table works
+        query = "CREATE TABLE " + TABLE_WORKS_NAME + "(" +
+                WORKS_ID + "INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                WORKS_CONTENT + " TEXT, " +
+                WORKS_MDF + " TEXT, " +
+                WORKS_CHECK + "INTEGER)";
         db.execSQL(query);
     }
 
@@ -60,6 +76,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_WORK_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_WORKS_NAME);
         onCreate(db);
     }
 
@@ -85,6 +102,16 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put(WORK_CONTENT, work.getContent());
         cv.put(WORK_MDF, work.getLast_mdf());
         cv.put(WORK_CHECK, work.getChecked());
+        long result = db.insert(TABLE_WORK_NAME, null, cv);
+        db.close();
+    }
+
+    public void addWorks(Works works) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(WORK_CONTENT, works.getContent());
+        cv.put(WORK_MDF, works.getLast_mdf());
+        cv.put(WORK_CHECK, works.getChecked());
         long result = db.insert(TABLE_WORK_NAME, null, cv);
         db.close();
     }
@@ -124,6 +151,25 @@ public class DBHelper extends SQLiteOpenHelper {
         return work;
     }
 
+
+    // get works
+    public Works getWorks(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(
+                TABLE_WORKS_NAME, new String[]{WORKS_ID, WORKS_CONTENT, WORKS_MDF, WORKS_CHECK},
+                WORKS_ID + "=?",
+                new String[]{String.valueOf(id)}, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+        Works works = new Works(
+                Integer.parseInt(cursor.getString(0)),
+                cursor.getString(1),
+                cursor.getString(2),
+                Integer.parseInt(cursor.getString(3)));
+        db.close();
+        return works;
+    }
+
     public List<Note> getAllNotes() {
         SQLiteDatabase db = this.getReadableDatabase();
         List<Note> noteList = new ArrayList<Note>();
@@ -154,8 +200,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT  * FROM " + TABLE_WORK_NAME;
         Cursor cursor = db.rawQuery(selectQuery, null);
-        int a= cursor.getCount();
-        Log.d("TEST",Integer.toString(a));
+        int a = cursor.getCount();
+        Log.d("TEST", Integer.toString(a));
         if (cursor.moveToFirst()) {
             do {
                 Work work = new Work();
@@ -172,6 +218,31 @@ public class DBHelper extends SQLiteOpenHelper {
         return workList;
     }
 
+
+    public List<Works> getAllWorks() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Works> worksList = new ArrayList<Works>();
+
+        String selectQuery = "SELECT  * FROM " + TABLE_WORKS_NAME;
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        int a = cursor.getCount();
+        Log.d("TEST", Integer.toString(a));
+        if (cursor.moveToFirst()) {
+            do {
+                Works works = new Works();
+                works.setWorksid(Integer.parseInt(cursor.getString(0)));
+                works.setContent(cursor.getString(1));
+                works.setLast_mdf(cursor.getString(2));
+                works.setChecked(Integer.parseInt(cursor.getString(3)));
+                // Adding note to list
+                worksList.add(works);
+            } while (cursor.moveToNext());
+        }
+        db.close();
+        cursor.close();
+        return worksList;
+    }
+
     public int getNotesCount() {
         String countQuery = "SELECT  * FROM " + TABLE_NOTE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -184,6 +255,16 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public int getWorkCount() {
         String countQuery = "SELECT  * FROM " + TABLE_WORK_NAME;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
+        cursor.close();
+        db.close();
+        return count;
+    }
+
+    public int getWorksCount() {
+        String countQuery = "SELECT  * FROM " + TABLE_WORKS_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
         int count = cursor.getCount();
@@ -215,6 +296,17 @@ public class DBHelper extends SQLiteOpenHelper {
                 new String[]{String.valueOf(work.getWorkid())});
     }
 
+    public int updateWorks(Works works) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(WORKS_CONTENT, works.getContent());
+        cv.put(WORKS_MDF, works.getLast_mdf());
+        cv.put(WORKS_CHECK, works.getChecked());
+        // updating row
+        return db.update(TABLE_WORKS_NAME, cv, WORKS_ID + " = ?",
+                new String[]{String.valueOf(works.getWorksid())});
+    }
+
     public void deleteNote(Note note) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NOTE_NAME, NOTE_ID + " = ?",
@@ -228,6 +320,23 @@ public class DBHelper extends SQLiteOpenHelper {
                 new String[]{String.valueOf(work.getWorkid())});
         db.close();
     }
+
+    public void deleteWorks(Works works) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_WORKS_NAME, WORKS_ID + " = ?",
+                new String[]{String.valueOf(works.getWorksid())});
+        db.close();
+    }
+    /*public Cursor readAllData_Work() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_WORK_NAME;
+        db = this.getReadableDatabase();
+        Cursor cursor = null;
+        if (db != null) {
+            cursor = db.rawQuery(query, null);
+        }
+        return cursor;
+    }*/
 
     public void createDefaultNotesIfNeed() {
         int count = this.getNotesCount();
