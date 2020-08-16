@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.Editable;
@@ -25,6 +26,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -67,11 +69,14 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
         holder.textView_ct.setText(works.getContent());
         holder.textView_time.setText(works.getLast_mdf());
         if (checked == 1) {
+            holder.cardView.setCardBackgroundColor(Color.LTGRAY);
             holder.textView_ct.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
             holder.textView_ct.setTextColor(Color.GRAY);
             holder.checkBox.setChecked(true);
         } else {
+            holder.cardView.setCardBackgroundColor(Color.WHITE);
             holder.textView_ct.setPaintFlags(0);
+            holder.textView_ct.setTextColor(Color.BLACK);
             holder.checkBox.setChecked(false);
         }
 
@@ -81,14 +86,19 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
                 dbHelper = new DBHelper(getContext());
                 int checked = works.getChecked();
                 if (checked == 1) {
-                    holder.textView_ct.setTextColor(Color.parseColor("#020202"));
+                    //holder.textView_ct.setTextColor(Color.BLACK);
                     //holder.textView_ct.setPaintFlags(0);
-                    holder.textView_ct.setPaintFlags(holder.textView_ct.getPaintFlags() ^ Paint.STRIKE_THRU_TEXT_FLAG);
+                    //holder.textView_ct.setPaintFlags(holder.textView_ct.getPaintFlags() ^ Paint.STRIKE_THRU_TEXT_FLAG);
                     works.setChecked(0);
+                    work.remove(works);
+                    notifyItemRemoved(position);
+                    work.add(0, works);
+                    notifyItemInserted(0);
                 } else {
-                    holder.textView_ct.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-                    holder.textView_ct.setTextColor(Color.GRAY);
+                    //holder.textView_ct.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+                    //holder.textView_ct.setTextColor(Color.GRAY);
                     works.setChecked(1);
+                    notifyItemChanged(position);
                 }
                 dbHelper.updateWork(works);
                 dbHelper.close();
@@ -143,9 +153,11 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
         public CheckBox checkBox;
         public TextView textView_ct;
         public TextView textView_time;
+        public CardView cardView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            cardView = itemView.findViewById(R.id.cardview_work);
             checkBox = itemView.findViewById(R.id.checkBox_work);
             textView_ct = itemView.findViewById(R.id.textView_content);
             textView_time = itemView.findViewById(R.id.textView_time);
@@ -164,7 +176,7 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
         //get work
         final Work wo = work.get(position);
         test.setText(wo.getContent());
-        String last = wo.getLast_mdf();
+        final String last = wo.getLast_mdf();
         //LAM MO NEN
         View container = popupWindow.getContentView().getRootView();
         if (container != null) {
@@ -178,7 +190,7 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
         }
         final Button button = popupView.findViewById(R.id.button_settime);
         final Button button2 = popupView.findViewById(R.id.button_hoantat);
-        if (last == "") {
+        if (last.equals("") == true) {
             button.setText("Đặt nhắc nhở");
         } else {
             button.setText(last);
@@ -192,8 +204,8 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (time.equals("") == false) {
-                    button.setText(time);
+                if (last.equals("") == false) {
+                    button.setText(last);
                 }
             }
 
@@ -227,7 +239,7 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
                 dbHelper = new DBHelper(getContext());
                 dbHelper.updateWork(wo);
                 notifyItemChanged(position);
-                time = "";
+                time="";
                 popupWindow.dismiss();
             }
         });

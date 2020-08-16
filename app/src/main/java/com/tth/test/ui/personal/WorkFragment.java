@@ -71,6 +71,7 @@ public class WorkFragment extends Fragment {
     WorkAdapter workAdapter;
     String time = "";
     boolean anhien = true;
+    int end_uncheck;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -80,6 +81,24 @@ public class WorkFragment extends Fragment {
         dbHelper = new DBHelper(getActivity());
         dbHelper.createDefaultWorkIfNeed();
         work = dbHelper.getAllWork();
+        Collections.sort(work, new Comparator<Work>() {
+            public int compare(Work obj1, Work obj2) {
+                return Integer.valueOf(obj2.getWorkid()).compareTo(Integer.valueOf(obj1.getWorkid()));
+            }
+        });
+        Collections.sort(work, new Comparator<Work>() {
+            public int compare(Work obj1, Work obj2) {
+                return Integer.valueOf(obj1.getChecked()).compareTo(Integer.valueOf(obj2.getChecked()));
+            }
+        });
+        /*int i=0;
+        for (Work wo:work) {
+            if(wo.getChecked()==1){
+                end_uncheck=i;
+                break;
+            }
+            i++;
+        }*/
 
         //BUTTON ADD
         FloatingActionButton add_button = root.findViewById(R.id.add_button);
@@ -119,8 +138,9 @@ public class WorkFragment extends Fragment {
 
     public void addwork(Work work1) {
         dbHelper.addWork(work1);
-        work.add(work1);
-        workAdapter.notifyDataSetChanged();
+        work.add(0,work1);
+        workAdapter.notifyItemInserted(0);
+        //workAdapter.notifyDataSetChanged();
         time = "";
     }
 
@@ -209,94 +229,7 @@ public class WorkFragment extends Fragment {
         KeyboardUtils.showKeyboard2(test);
     }
 
-    //POPUP EDIT WORK
-    public void showPopUpWindowEdit(final View view, final int position) {
-        LayoutInflater layoutInflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
-        final View popupView = layoutInflater.inflate(R.layout.activity_add_work, null);
-        int width = LinearLayout.LayoutParams.MATCH_PARENT;
-        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        boolean focusable = true;
-        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 70);
-        final TextView test = popupView.findViewById(R.id.editTextTextMultiLine);
-        //get work
-        final Work wo = work.get(position);
-        test.setText(wo.getContent());
-        String last = wo.getLast_mdf();
-        //LAM MO NEN
-        View container = popupWindow.getContentView().getRootView();
-        if (container != null) {
-            WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-            WindowManager.LayoutParams p = (WindowManager.LayoutParams) container.getLayoutParams();
-            p.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
-            p.dimAmount = 0.3f;
-            if (wm != null) {
-                wm.updateViewLayout(container, p);
-            }
-        }
-        final Button button = popupView.findViewById(R.id.button_settime);
-        final Button button2 = popupView.findViewById(R.id.button_hoantat);
-        if (last == "") {
-            button.setText("Đặt nhắc nhở");
-        } else {
-            button.setText(last);
-        }
-        button2.setText("Hoàn tất");
-        button2.setTextColor(Color.GREEN);
-        test.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (time.equals("") == false) {
-                    button.setText(time);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable.toString().trim().length() > 0) {
-                    button2.setTextColor(Color.GREEN);
-                    button2.setEnabled(true);
-                } else {
-                    button2.setTextColor(Color.GRAY);
-                    button2.setEnabled(false);
-                }
-            }
-        });
-        //set time
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                datePicker();
-            }
-        });
-        //save
-        if (test.getText() == "") button2.setEnabled(false);
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                wo.setContent(test.getText().toString());
-                if (time.equals("") == false) {
-                    wo.setLast_mdf(time);
-                }
-                dbHelper.updateWork(wo);
-                workAdapter.notifyItemChanged(position);
-                popupWindow.dismiss();
-            }
-        });
-        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                KeyboardUtils.showKeyboard2(view);
-            }
-        });
-        KeyboardUtils.showKeyboard2(test);
-    }
-
-    //DATE PICKER, TIME PICKER
+    //DATE PICKER, TIME PICKE
     private void datePicker() {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -399,6 +332,7 @@ public class WorkFragment extends Fragment {
                 }
                 for (int j = dem-1; j >=0; j--) {
                     work.remove(aa[j]);
+                   //workAdapter.notifyItemRemoved(j);
                 }
                 workAdapter.notifyDataSetChanged();
                 anhien=false;
@@ -410,6 +344,7 @@ public class WorkFragment extends Fragment {
                 List<Work> lw = new ArrayList<>();
                 lw=dbHelper.getAllWork();
                 work.addAll(lw);
+                //workAdapter.notifyItemRangeChanged(0,work.size());
                 workAdapter.notifyDataSetChanged();
             }
 
