@@ -207,7 +207,9 @@ public class WorkFragment extends Fragment {
                 DBHelper dbHelper = new DBHelper(view.getContext());
                 String content = test.getText().toString();
                 Work wo = new Work(content, time, 0);
-                addwork(wo);
+                //addwork(wo);
+                workAdapter.addwork(wo);
+                time="";
                 popupWindow.dismiss();
             }
         });

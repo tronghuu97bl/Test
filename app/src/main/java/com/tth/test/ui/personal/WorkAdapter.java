@@ -46,6 +46,7 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
     private List<Work> work;
     DBHelper dbHelper;
     String time = "";
+    int index_1 = -1;
 
     WorkAdapter(Context context, List<Work> work) {
         this.work = work;
@@ -73,9 +74,13 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
             holder.textView_ct.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
             holder.textView_ct.setTextColor(Color.GRAY);
             holder.checkBox.setChecked(true);
+            if (index_1 == -1) {
+                index_1 = position;
+            }
         } else {
             holder.cardView.setCardBackgroundColor(Color.WHITE);
             holder.textView_ct.setPaintFlags(0);
+            //holder.textView_ct.setPaintFlags(holder.textView_ct.getPaintFlags() ^ Paint.STRIKE_THRU_TEXT_FLAG);
             holder.textView_ct.setTextColor(Color.BLACK);
             holder.checkBox.setChecked(false);
         }
@@ -86,19 +91,27 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
                 dbHelper = new DBHelper(getContext());
                 int checked = works.getChecked();
                 if (checked == 1) {
-                    //holder.textView_ct.setTextColor(Color.BLACK);
-                    //holder.textView_ct.setPaintFlags(0);
-                    //holder.textView_ct.setPaintFlags(holder.textView_ct.getPaintFlags() ^ Paint.STRIKE_THRU_TEXT_FLAG);
+                    index_1++;
                     works.setChecked(0);
                     work.remove(works);
                     notifyItemRemoved(position);
                     work.add(0, works);
                     notifyItemInserted(0);
+                    //Toast.makeText(getContext(), String.valueOf(index_1), Toast.LENGTH_SHORT).show();
                 } else {
-                    //holder.textView_ct.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-                    //holder.textView_ct.setTextColor(Color.GRAY);
                     works.setChecked(1);
-                    notifyItemChanged(position);
+                    work.remove(works);
+                    notifyItemRemoved(position);
+                    if (index_1 == -1) {
+                        work.add(work.size(), works);
+                        index_1=work.size();
+                    } else {
+                        index_1--;
+                        work.add(index_1 - 1, works);
+                    }
+                    notifyItemInserted(index_1 - 1);
+                    //Toast.makeText(getContext(), String.valueOf(index_1), Toast.LENGTH_SHORT).show();
+                    //notifyItemChanged(position);
                 }
                 dbHelper.updateWork(works);
                 dbHelper.close();
@@ -127,10 +140,21 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
         this.context = context;
     }
 
+    public void addwork(Work work1) {
+        dbHelper = new DBHelper(getContext());
+        dbHelper.addWork(work1);
+        work.add(0, work1);
+        notifyItemInserted(0);
+        index_1++;
+        //Toast.makeText(context, String.valueOf(index_1), Toast.LENGTH_SHORT).show();
+        //workAdapter.notifyDataSetChanged();
+    }
+
     public void deleteItem(int position) {
         DBHelper dbHelper = new DBHelper(getContext());
         Work wo = work.get(position);
         work.remove(wo);
+        index_1--;
         dbHelper.deleteWork(wo);
         notifyItemRemoved(position);
     }
@@ -239,7 +263,7 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
                 dbHelper = new DBHelper(getContext());
                 dbHelper.updateWork(wo);
                 notifyItemChanged(position);
-                time="";
+                time = "";
                 popupWindow.dismiss();
             }
         });
