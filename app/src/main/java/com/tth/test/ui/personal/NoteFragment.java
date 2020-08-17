@@ -1,19 +1,31 @@
 package com.tth.test.ui.personal;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,8 +33,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tth.test.R;
 import com.tth.test.db.DBHelper;
 import com.tth.test.model.Note;
+import com.tth.test.util.KeyboardUtils;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -35,6 +49,7 @@ public class NoteFragment extends Fragment {
     DBHelper dbHelper;
     ImageView empty_imageview;
     TextView no_data;
+    NoteAdapter noteAdapter;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -99,10 +114,10 @@ public class NoteFragment extends Fragment {
                 addNote.showPopUpWindow(view);
             }
         });
-        //xu ly onLongClick view
-
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numberOfColumns, StaggeredGridLayoutManager.VERTICAL));
         recyclerView.setAdapter(new NoteAdapter(getActivity(), note));
         return view;
     }
+
+
 }
