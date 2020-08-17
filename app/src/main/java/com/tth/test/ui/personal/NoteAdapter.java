@@ -32,6 +32,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     private List<Note> note;
     private Context context;
     DBHelper dbHelper;
+    NoteFragment noteFragment ;
     private ArrayAdapter<Note> listViewAdapter;
 //    private ItemClickListener mClickListener;
     public NoteAdapter(Context context, List<Note> note){
@@ -61,9 +62,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
 
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "Click Long", Toast.LENGTH_SHORT).show();
-                AddNote addNote = new AddNote();
-                addNote.showPopUpWindow(view);
+                Toast.makeText(context, "Click Long"+notes.getTitle(), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -81,16 +80,19 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
                         switch (menuItem.getItemId()) {
                             case R.id.itemMenu_edit:
                                 Toast.makeText(context, notes.getChecked(), Toast.LENGTH_LONG);
-
-
                                 break;
                             case R.id.itemMenu_done:
+                                dbHelper = new DBHelper(context);
                                 notes.setChecked(1);
-                                holder.itemView.setBackgroundColor(Color.parseColor("#ffffff"));
+                                notifyDataSetChanged();
                                 break;
                             case R.id.itemMenu_delete:
-
-
+                                dbHelper = new DBHelper(context);
+                                dbHelper.deleteNote(notes);
+                                note.remove(notes);
+                                Toast.makeText(context, "deleted", Toast.LENGTH_LONG);
+                                //refresh
+                                notifyDataSetChanged();
                                 break;
                             case R.id.itemMenu_secure:
                                 break;

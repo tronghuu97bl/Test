@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class AddNote {
+
     public void showPopUpWindow(final View view) {
         LayoutInflater layoutInflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
         final View popupView = layoutInflater.inflate(R.layout.activity_add_note, null);
@@ -56,6 +57,7 @@ public class AddNote {
                 String last_modify = current_time.toString();
                 Note note = new Note(noteTitle,noteContent, last_modify,0);
                 dbHelper.addNote(note);
+                popupWindow.dismiss();
             }
         });
 

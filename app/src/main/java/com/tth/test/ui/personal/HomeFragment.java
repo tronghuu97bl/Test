@@ -11,6 +11,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.tth.test.R;
+import com.tth.test.ui.about.AboutFragment;
 
 public class HomeFragment extends Fragment {
     private ViewPager viewPager;
