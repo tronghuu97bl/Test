@@ -16,6 +16,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         ></TextView>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F5F3FA"
+        ></View>
     <TextView
         android:id="@+id/tv_content"
         android:layout_width="wrap_content"

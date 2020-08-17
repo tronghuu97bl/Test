@@ -24,18 +24,18 @@
         tools:layout="@layout/fragment_friend" />
     <fragment
         android:id="@+id/nav_group"
-        android:name="com.tth.test.ui.friend.FriendFragment"
+        android:name="com.tth.test.ui.group.GroupFragment"
         android:label="@string/menu_group"
         tools:layout="@layout/fragment_group" />
     <fragment
         android:id="@+id/nav_setting"
-        android:name="com.tth.test.ui.friend.FriendFragment"
+        android:name="com.tth.test.ui.setting.SettingFragment"
         android:label="@string/menu_setting"
         tools:layout="@layout/fragment_setting" />
 
     <fragment
         android:id="@+id/nav_about"
-        android:name="com.tth.test.ui.friend.FriendFragment"
+        android:name="com.tth.test.ui.about.AboutFragment"
         android:label="@string/menu_about"
         tools:layout="@layout/fragment_about" />
 </navigation>

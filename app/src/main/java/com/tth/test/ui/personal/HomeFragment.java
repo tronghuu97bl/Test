@@ -11,6 +11,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.tth.test.R;
+import com.tth.test.ui.about.AboutFragment;
 
 public class HomeFragment extends Fragment {
     private ViewPager viewPager;
@@ -25,6 +26,7 @@ public class HomeFragment extends Fragment {
         adapter = new HomeAdapter(getChildFragmentManager());
         adapter.AddFragment(new NoteFragment(),"Ghi Chú");
         adapter.AddFragment(new WorkFragment(),"Nhiệm Vụ");
+
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         return root;
