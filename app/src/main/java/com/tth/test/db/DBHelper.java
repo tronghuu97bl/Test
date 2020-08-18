@@ -351,10 +351,10 @@ public class DBHelper extends SQLiteOpenHelper {
     public void createDefaultWorkIfNeed() {
         int count = this.getWorkCount();
         if (count == 0) {
-            Work work1 = new Work("thiên hạ vô song thiên hạ vô song thiên hạ vô song thiên hạ vô song ",
-                    "1/1/2020", 0);
-            Work work2 = new Work("abcdef ",
-                    "1/1/2020", 0);
+            Work work1 = new Work("Chào mừng sử dụng Nhiệm vụ!",
+                    "", 0);
+            Work work2 = new Work("Để chỉnh sửa nhiệm vụ văn bản, bạn chỉ cần chạm vào ",
+                    "", 0);
             this.addWork(work1);
             this.addWork(work2);
         }
