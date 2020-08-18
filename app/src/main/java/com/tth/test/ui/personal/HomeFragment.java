@@ -26,7 +26,6 @@ public class HomeFragment extends Fragment {
         adapter = new HomeAdapter(getChildFragmentManager());
         adapter.AddFragment(new NoteFragment(),"Ghi Chú");
         adapter.AddFragment(new WorkFragment(),"Nhiệm Vụ");
-
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         return root;
