@@ -8,23 +8,27 @@ public class Note implements Serializable {
     private String content;
     private String last_mdf;
     private int checked;
+    private int secure;
 
     public Note() {
     }
 
-    public Note(int noteid, String title, String content, String last_mdf, int checked) {
+    public Note(int noteid, String title, String content, String last_mdf, int checked, int secure) {
         this.noteid = noteid;
         this.title = title;
         this.content = content;
         this.last_mdf = last_mdf;
         this.checked = checked;
+        this.secure = secure;
+
     }
 
-    public Note(String title, String content, String last_mdf, int checked) {
+    public Note(String title, String content, String last_mdf, int checked, int secure) {
         this.title = title;
         this.content = content;
         this.last_mdf = last_mdf;
         this.checked = checked;
+        this.secure = secure;
     }
 
     public int getNoteid() {
@@ -65,5 +69,11 @@ public class Note implements Serializable {
 
     public void setChecked(int checked) {
         this.checked = checked;
+    }
+    public int getSecure(){
+        return secure;
+    }
+    public void setSecure(int secure){
+        this.secure = secure;
     }
 }

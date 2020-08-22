@@ -46,6 +46,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     DBHelper dbHelper;
     NoteFragment noteFragment ;
     String time = "";
+    int index_1 = -1;
+    int count =0;
     private ArrayAdapter<Note> listViewAdapter;
 //    private ItemClickListener mClickListener;
     public NoteAdapter(Context context, List<Note> note){
@@ -62,33 +64,27 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
 //            view.setMinimumHeight(height);
             return new ViewHolder(view);
             }
-
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         final Note notes = note.get(position);
         holder.noteContent.setText(notes.getContent());
         holder.noteTitle.setText(notes.getTitle());
+
         if (notes.getChecked() == 1) {
             holder.itemView.setBackgroundColor(Color.parseColor("#dce3dc"));
         }
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(context, "Click Long" + notes.getTitle(), Toast.LENGTH_SHORT).show();
 
-            }
-        });
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showPopUpWindowEdit(view, position);
             }
         });
-
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public boolean onLongClick(View view) {
+            public boolean onLongClick(final View view) {
                 //Toast.makeText(context, "Click Long", Toast.LENGTH_SHORT).show();
                 PopupMenu popupMenu = new PopupMenu(context, holder.itemView);
                 popupMenu.inflate(R.menu.layout_popup_home);
@@ -99,7 +95,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
                         switch (menuItem.getItemId()) {
                             case R.id.itemMenu_done:
                                 dbHelper = new DBHelper(context);
-                                if(notes.getChecked()==0) {
+                                if (notes.getChecked()==0) {
                                     notes.setChecked(1);
                                     dbHelper.updateNote(notes);
                                     notifyDataSetChanged();
@@ -109,7 +105,10 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
                                     notes.setChecked(0);
                                     dbHelper.updateNote(notes);
                                     notifyDataSetChanged();
+
                                 }
+
+
                                 break;
                             case R.id.itemMenu_delete:
                                 dbHelper = new DBHelper(context);
@@ -119,6 +118,21 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
                                 notifyDataSetChanged();
                                 break;
                             case R.id.itemMenu_secure:
+                                dbHelper = new DBHelper(context);
+                                if(notes.getSecure()==0){
+                                    notes.setSecure(1);
+                                    note.remove(notes);
+                                    dbHelper.updateNote(notes);
+
+                                    notifyDataSetChanged();
+                                }
+                                else
+                                {
+                                    notes.setSecure(0);
+                                    dbHelper.updateNote(notes);
+                                    notifyDataSetChanged();
+                                }
+
                                 break;
                             default:
                                 throw new IllegalStateException("Unexpected value: " + menuItem.getItemId());
@@ -141,11 +155,13 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView noteContent;
         TextView noteTitle;
+        Button enter;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             noteContent = itemView.findViewById(R.id.tv_content);
             noteTitle = itemView.findViewById(R.id.tv_title);
+            enter = itemView.findViewById(R.id.button_enter);
 
         }
 
@@ -157,7 +173,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
         boolean focusable = true;
         final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 70);
+        popupWindow.showAtLocation(view, Gravity.TOP, 0, 800);
         final TextView title = popupView.findViewById(R.id.edt_titleNote);
         final TextView content =  popupView.findViewById(R.id.edt_note);
         //get work
@@ -176,6 +192,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
                 wm.updateViewLayout(container, p);
             }
         }
+
         final Button button = popupView.findViewById(R.id.button_time);
         final Button button2 = popupView.findViewById(R.id.button_done);
         if (last.equals("") == true) {
@@ -241,4 +258,13 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         });
         KeyboardUtils.showKeyboard2(title);
             }
+    public void updateList(List<Note> list) {
+        note = list;
+        notifyDataSetChanged();
+    }
+    public void addnote(Note note1) {
+        dbHelper = new DBHelper(context);
+        dbHelper.addNote(note1);
+        updateList(note);
+    }
     }

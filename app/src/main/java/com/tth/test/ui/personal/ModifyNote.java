@@ -57,7 +57,7 @@ public class ModifyNote {
                 String noteTitle = title.getText().toString();
                 String noteContent = content.getText().toString();
                 String last_modify = current_time.toString();
-                Note note = new Note(noteTitle,noteContent, last_modify,0);
+                Note note = new Note(noteTitle,noteContent, last_modify,0,0);
                 dbHelper.updateNote(note);
             }
         });

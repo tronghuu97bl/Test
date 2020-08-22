@@ -104,7 +104,7 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
                     notifyItemRemoved(position);
                     if (index_1 == -1) {
                         work.add(work.size(), works);
-                        index_1=work.size();
+                        index_1 = work.size();
                     } else {
                         index_1--;
                         work.add(index_1 - 1, works);
@@ -148,6 +148,11 @@ public class WorkAdapter extends RecyclerView.Adapter<WorkAdapter.ViewHolder> {
         index_1++;
         //Toast.makeText(context, String.valueOf(index_1), Toast.LENGTH_SHORT).show();
         //workAdapter.notifyDataSetChanged();
+    }
+
+    public void updateList(List<Work> list) {
+        work = list;
+        notifyDataSetChanged();
     }
 
     public void deleteItem(int position) {

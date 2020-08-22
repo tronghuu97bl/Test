@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Canvas;
@@ -26,6 +27,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -69,14 +71,23 @@ public class WorkFragment extends Fragment {
     ImageView empty_imageview;
     TextView no_data;
     WorkAdapter workAdapter;
+    TextView textView;
     String time = "";
     boolean anhien = true;
-    int end_uncheck;
+    Button button;
+    Button button2;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_work, container, false);
         final RecyclerView recyclerView = root.findViewById(R.id.rv_work);
+        textView = root.findViewById(R.id.editTextTextMultiLine2);
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopUpWindowSearch(view);
+            }
+        });
         work = new ArrayList<>();
         dbHelper = new DBHelper(getActivity());
         dbHelper.createDefaultWorkIfNeed();
@@ -91,15 +102,6 @@ public class WorkFragment extends Fragment {
                 return Integer.valueOf(obj1.getChecked()).compareTo(Integer.valueOf(obj2.getChecked()));
             }
         });
-        /*int i=0;
-        for (Work wo:work) {
-            if(wo.getChecked()==1){
-                end_uncheck=i;
-                break;
-            }
-            i++;
-        }*/
-
         //BUTTON ADD
         FloatingActionButton add_button = root.findViewById(R.id.add_button);
         empty_imageview = root.findViewById(R.id.empty_imageview);
@@ -138,7 +140,7 @@ public class WorkFragment extends Fragment {
 
     public void addwork(Work work1) {
         dbHelper.addWork(work1);
-        work.add(0,work1);
+        work.add(0, work1);
         workAdapter.notifyItemInserted(0);
         //workAdapter.notifyDataSetChanged();
         time = "";
@@ -166,8 +168,8 @@ public class WorkFragment extends Fragment {
         }
 
         final TextView test = popupView.findViewById(R.id.editTextTextMultiLine);
-        final Button button = popupView.findViewById(R.id.button_settime);
-        final Button button2 = popupView.findViewById(R.id.button_hoantat);
+         button = popupView.findViewById(R.id.button_settime);
+         button2 = popupView.findViewById(R.id.button_hoantat);
         button.setText("Đặt nhắc nhở");
         button2.setText("Hoàn tất");
         test.addTextChangedListener(new TextWatcher() {
@@ -209,8 +211,8 @@ public class WorkFragment extends Fragment {
                 Work wo = new Work(content, time, 0);
                 //addwork(wo);
                 workAdapter.addwork(wo);
-                time="";
-                popupWindow.dismiss();
+                time = "";
+                popupWindow.dismiss();filter("");
             }
         });
         //nhan vao khu vuc cua popup
@@ -219,6 +221,63 @@ public class WorkFragment extends Fragment {
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 //popupWindow.dismiss();
                 return true;
+            }
+        });
+        //click out popup
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                KeyboardUtils.showKeyboard2(view);
+            }
+        });
+        KeyboardUtils.showKeyboard2(test);
+    }
+
+    //POPUP SEARCH
+    public void showPopUpWindowSearch(final View view) {
+        LayoutInflater layoutInflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
+        final View popupView = layoutInflater.inflate(R.layout.search, null);
+        int width = LinearLayout.LayoutParams.MATCH_PARENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true;
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+        //popupWindow.setOutsideTouchable(true);
+        popupWindow.showAtLocation(view, Gravity.TOP, 0, 0);
+        /*//LAM MO NEN
+        View container = popupWindow.getContentView().getRootView();
+        if (container != null) {
+            WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+            WindowManager.LayoutParams p = (WindowManager.LayoutParams) container.getLayoutParams();
+            p.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+            p.dimAmount = 0.3f;
+            if (wm != null) {
+                wm.updateViewLayout(container, p);
+            }
+        }*/
+        final TextView test = popupView.findViewById(R.id.editTextSearch);
+        final Button button = popupView.findViewById(R.id.button_huy);
+        button.setText("Hủy");
+        test.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                filter(editable.toString());
+            }
+        });
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                popupWindow.dismiss();
+                android.os.Process.killProcess(android.os.Process.myPid());
             }
         });
         //click out popup
@@ -319,32 +378,33 @@ public class WorkFragment extends Fragment {
         inflater.inflate(R.menu.work, menu);
     }
 
+    //MENU ITEM
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_item_work_1) {
-            Toast.makeText(getContext(), "Tính năng đang cập nhật", Toast.LENGTH_SHORT).show();
+            filter("");
         }
         if (item.getItemId() == R.id.menu_item_work_2) {
-            if(anhien==true){
+            if (anhien == true) {
                 int aa[] = new int[work.size()];
                 int dem = 0, i = 0;
                 for (Work w : work) {
                     if (w.getChecked() == 1) aa[dem++] = i;
                     i++;
                 }
-                for (int j = dem-1; j >=0; j--) {
+                for (int j = dem - 1; j >= 0; j--) {
                     work.remove(aa[j]);
-                   //workAdapter.notifyItemRemoved(j);
+                    //workAdapter.notifyItemRemoved(j);
                 }
                 workAdapter.notifyDataSetChanged();
-                anhien=false;
+                anhien = false;
                 item.setTitle("Hiện nhiệm vụ đã hoàn thành");
-            }else{
+            } else {
                 item.setTitle("Ẩn nhiệm vụ đã hoàn thành");
-                anhien=true;
+                anhien = true;
                 work.removeAll(work);
                 List<Work> lw = new ArrayList<>();
-                lw=dbHelper.getAllWork();
+                lw = dbHelper.getAllWork();
                 work.addAll(lw);
                 //workAdapter.notifyItemRangeChanged(0,work.size());
                 workAdapter.notifyDataSetChanged();
@@ -376,6 +436,20 @@ public class WorkFragment extends Fragment {
             workAdapter.notifyDataSetChanged();
         }
         return true;
+    }
+
+    //FILTER SEARCH
+    public void filter(String text) {
+        List<Work> temp = new ArrayList();
+        for (Work w : work) {
+            //or use .equal(text) with you want equal match
+            //use .toLowerCase() for better matches
+            if (w.getContent().contains(text)) {
+                temp.add(w);
+            }
+        }
+        //update recyclerview
+        workAdapter.updateList(temp);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.tth.test.db;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.tth.test.model.Note;
+import com.tth.test.model.Password;
 import com.tth.test.model.Work;
 import com.tth.test.model.Works;
 
@@ -29,6 +31,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String NOTE_CONTENT = "note_content";
     private static final String NOTE_MDF = "note_last_mdf";
     private static final String NOTE_CHECK = "note_checked";
+    private static final String NOTE_SECURE ="note_secure";
     //table work (cong viec ca nhan)
     private static final String TABLE_WORK_NAME = "work";
     private static final String WORK_ID = "work_id";
@@ -41,7 +44,10 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String WORKS_CONTENT = "works_content";
     private static final String WORKS_MDF = "works_last_mdf";
     private static final String WORKS_CHECK = "works_check";
-
+    //table password _ mat khau bao ve note
+    private  static final String TABLE_PASSWORD_NAME = "password";
+    private static final String PASS_ID = "pass_id";
+    private static final String PASSWORD = "pass_word";
     public DBHelper(Context context) {
         super(context, DATABASE_NAM, null, DATABASE_VERSION);
         this.context = context;
@@ -54,7 +60,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 NOTE_TITLE + " TEXT, " +
                 NOTE_CONTENT + " TEXT, " +
                 NOTE_MDF + " TEXT, " +
-                NOTE_CHECK + " INTEGER)";
+                NOTE_CHECK + " INTEGER," +
+                NOTE_SECURE +" INTEGER)";
         db.execSQL(query);
         // add table work
         query = "CREATE TABLE " + TABLE_WORK_NAME + "( " +
@@ -65,11 +72,16 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(query);
         //add table works
         query = "CREATE TABLE " + TABLE_WORKS_NAME + "(" +
-                WORKS_ID + "INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                WORKS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 WORKS_CONTENT + " TEXT, " +
                 WORKS_MDF + " TEXT, " +
                 WORKS_CHECK + "INTEGER)";
         db.execSQL(query);
+        //add table password
+//        query = "CREATE TABLE " + TABLE_PASSWORD_NAME +"(" +
+//                PASS_ID +" INTEGER PRIMARY KEY AUTOINCREMENT, "+
+//                PASSWORD + "TEXT)";
+//        db.execSQL(query);
     }
 
     @Override
@@ -77,6 +89,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_WORK_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_WORKS_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+ TABLE_PASSWORD_NAME);
         onCreate(db);
     }
 
@@ -87,6 +100,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put(NOTE_CONTENT, note.getContent());
         cv.put(NOTE_MDF, note.getLast_mdf());
         cv.put(NOTE_CHECK, note.getChecked());
+        cv.put(NOTE_SECURE, note.getSecure());
         long result = db.insert(TABLE_NOTE_NAME, null, cv);
         if (result == -1) {
             Toast.makeText(context, "Add Note Failed", Toast.LENGTH_SHORT).show();
@@ -95,6 +109,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         db.close();
     }
+
 
     public void addWork(Work work) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -115,11 +130,25 @@ public class DBHelper extends SQLiteOpenHelper {
         long result = db.insert(TABLE_WORK_NAME, null, cv);
         db.close();
     }
+    //add pass
+//    public void addPass(Password password){
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        ContentValues cv = new ContentValues();
+//        cv.put(PASSWORD, password.getPassword());
+//        long result = db.insert(TABLE_PASSWORD_NAME, null, cv);
+//        if(result==-1){
+//            Toast.makeText(context, "Add password failed", Toast.LENGTH_LONG);
+//
+//        }
+//        else
+//            Toast.makeText(context, "Add password success", Toast.LENGTH_LONG);
+//        db.close();
+//    }
 
     public Note getNote(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(
-                TABLE_NOTE_NAME, new String[]{NOTE_ID, NOTE_TITLE, NOTE_CONTENT, NOTE_MDF, NOTE_CHECK},
+                TABLE_NOTE_NAME, new String[]{NOTE_ID, NOTE_TITLE, NOTE_CONTENT, NOTE_MDF, NOTE_CHECK, NOTE_SECURE},
                 NOTE_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
@@ -129,7 +158,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 cursor.getString(1),
                 cursor.getString(2),
                 cursor.getString(3),
-                Integer.parseInt(cursor.getString(4)));
+                Integer.parseInt(cursor.getString(4)),
+                Integer.parseInt(cursor.getString(5)));
         db.close();
         return note;
     }
@@ -169,12 +199,28 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return works;
     }
+    //
+//    public Password getPassword(int id){
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        Cursor cursor = db.query(
+//                TABLE_PASSWORD_NAME, new String[]{PASS_ID, PASSWORD},
+//                PASS_ID + "=?",
+//                new String[]{String.valueOf(id)}, null, null, null,null);
+//        if (cursor!=null)
+//            cursor.moveToFirst();
+//        Password password = new Password(
+//                Integer.parseInt(cursor.getString(0)),
+//                cursor.getString(1));
+//                db.close();
+//                return password;
+//
+//    }
 
     public List<Note> getAllNotes() {
         SQLiteDatabase db = this.getReadableDatabase();
         List<Note> noteList = new ArrayList<Note>();
 
-        String selectQuery = "SELECT  * FROM " + TABLE_NOTE_NAME;
+        String selectQuery = "SELECT  * FROM " + TABLE_NOTE_NAME +" WHERE "+NOTE_SECURE + " = 0 ";
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         if (cursor.moveToFirst()) {
@@ -185,6 +231,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 note.setContent(cursor.getString(2));
                 note.setLast_mdf(cursor.getString(3));
                 note.setChecked(Integer.parseInt(cursor.getString(4)));
+                note.setSecure(Integer.parseInt(cursor.getString(5)));
                 // Adding note to list
                 noteList.add(note);
             } while (cursor.moveToNext());
@@ -193,7 +240,28 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
         return noteList;
     }
+    public List<Note> getAllSecure(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Note> noteList = new ArrayList<Note>();
+        String selectQuery = "SELECT * FROM "+ TABLE_NOTE_NAME + " WHERE "+NOTE_SECURE + " = 1 ";
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()){
+            do{
+                Note note = new Note();
+                note.setNoteid(Integer.parseInt(cursor.getString(0)));
+                note.setTitle(cursor.getString(1));
+                note.setContent(cursor.getString(2));
+                note.setLast_mdf(cursor.getString(3));
+                note.setChecked(Integer.parseInt(cursor.getString(4)));
+                note.setSecure(Integer.parseInt(cursor.getString(5)));
+                noteList.add(note);
+            }while (cursor.moveToNext());
 
+        }
+        db.close();
+        cursor.close();
+        return noteList;
+    }
     public List<Work> getAllWork() {
         SQLiteDatabase db = this.getReadableDatabase();
         List<Work> workList = new ArrayList<Work>();
@@ -280,6 +348,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put(NOTE_CONTENT, note.getContent());
         cv.put(NOTE_MDF, note.getLast_mdf());
         cv.put(NOTE_CHECK, note.getChecked());
+        cv.put(NOTE_SECURE, note.getSecure());
         // updating row
         return db.update(TABLE_NOTE_NAME, cv, NOTE_ID + " = ?",
                 new String[]{String.valueOf(note.getNoteid())});
@@ -341,8 +410,8 @@ public class DBHelper extends SQLiteOpenHelper {
     public void createDefaultNotesIfNeed() {
         int count = this.getNotesCount();
         if (count == 0) {
-            Note note1 = new Note("Note1_title", "content note 1", "1/1/2020", 0);
-            Note note2 = new Note("Note2_title", "content note 2", "1/2/2020", 0);
+            Note note1 = new Note("Note1_title", "content note 1", "1/1/2020", 0,1);
+            Note note2 = new Note("Note2_title", "content note 2", "1/2/2020", 0,0);
             this.addNote(note1);
             this.addNote(note2);
         }
@@ -351,10 +420,10 @@ public class DBHelper extends SQLiteOpenHelper {
     public void createDefaultWorkIfNeed() {
         int count = this.getWorkCount();
         if (count == 0) {
-            Work work1 = new Work("thiên hạ vô song thiên hạ vô song thiên hạ vô song thiên hạ vô song ",
-                    "1/1/2020", 0);
-            Work work2 = new Work("abcdef ",
-                    "1/1/2020", 0);
+            Work work1 = new Work("Chào mừng sử dụng Nhiệm vụ!",
+                    "", 0);
+            Work work2 = new Work("Để chỉnh sửa nhiệm vụ văn bản, bạn chỉ cần chạm vào ",
+                    "", 0);
             this.addWork(work1);
             this.addWork(work2);
         }
