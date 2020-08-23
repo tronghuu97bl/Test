@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.tth.test.model.Note;
+import com.tth.test.model.UserModel;
 import com.tth.test.model.Work;
 import com.tth.test.model.Works;
 
@@ -41,6 +42,12 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String WORKS_CONTENT = "works_content";
     private static final String WORKS_MDF = "works_last_mdf";
     private static final String WORKS_CHECK = "works_check";
+    //table user information - thong tin nguoi dung
+    private static final String TABLE_USER = "user";
+    private static final String USER_ID = "user_id";
+    private static final String USER_NAME = "user_name";
+    private static final String USER_EMAIL = "user_email";
+    private static final String USER_PASSWORD = "user_password";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAM, null, DATABASE_VERSION);
@@ -65,10 +72,17 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(query);
         //add table works
         query = "CREATE TABLE " + TABLE_WORKS_NAME + "(" +
-                WORKS_ID + "INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                WORKS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 WORKS_CONTENT + " TEXT, " +
                 WORKS_MDF + " TEXT, " +
                 WORKS_CHECK + "INTEGER)";
+        db.execSQL(query);
+        //add table user
+        query = "CREATE TABLE " + TABLE_USER + "( " +
+                USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                USER_NAME + " TEXT, " +
+                USER_EMAIL + " TEXT, " +
+                USER_PASSWORD + " TEXT)";
         db.execSQL(query);
     }
 
@@ -77,6 +91,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_WORK_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_WORKS_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         onCreate(db);
     }
 
@@ -243,6 +258,30 @@ public class DBHelper extends SQLiteOpenHelper {
         return worksList;
     }
 
+    public List<UserModel> getAllUser() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<UserModel> usersList = new ArrayList<UserModel>();
+
+        String selectQuery = "SELECT  * FROM " + TABLE_USER;
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        int a = cursor.getCount();
+        Log.d("TEST", Integer.toString(a));
+        if (cursor.moveToFirst()) {
+            do {
+                UserModel users = new UserModel();
+                users.setId(Integer.parseInt(cursor.getString(0)));
+                users.setUser(cursor.getString(1));
+                users.setEmail(cursor.getString(2));
+                users.setPass(cursor.getString(3));
+                // Adding note to list
+                usersList.add(users);
+            } while (cursor.moveToNext());
+        }
+        db.close();
+        cursor.close();
+        return usersList;
+    }
+
     public int getNotesCount() {
         String countQuery = "SELECT  * FROM " + TABLE_NOTE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -359,4 +398,17 @@ public class DBHelper extends SQLiteOpenHelper {
             this.addWork(work2);
         }
     }
+
+    //add user
+    public void addUser(UserModel user) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(USER_NAME, user.getUsername());
+        values.put(USER_EMAIL, user.getEmail());
+        values.put(USER_PASSWORD, user.getPass());
+
+        db.insert(TABLE_USER, null, values);
+        db.close();
+    }
+
 }

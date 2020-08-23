@@ -15,6 +15,21 @@
     <string name="menu_about">About</string>
     <string name="tv_test">asdklasmdlkajdslkml</string>
     <string name="no_data">No Data.</string>
+    <string name="login_btn">Đăng nhập</string>
+    <string name="register_btn">Đăng ký</string>
+    <string name="hint_username">Tên đăng nhập</string>
+    <string name="hint_pass">Mật khẩu</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_confirm_pass">Nhập lại mật khẩu</string>
+    <string name="text_not_member">Chưa có tài khoản? Tạo tài khoản</string>
+    <string name="error_message_notfilled">Vui lòng nhập đủ thông tin!</string>
+    <string name="login_success">Đăng nhập thành công!</string>
+    <string name="register_success">Đăng ký thành công</string>
+    <string name="login_fail">Tài khoản không tồn tại</string>
+    <string name="error_user_existed">Tên người dùng đã tồn tại</string>
+    <string name="error_wrong_email">Email không hợp lệ!</string>
+    <string name="error_pass_notmatched">Mật khẩu không khớp!</string>
+    <string name="error_wrong_pass">Mật khẩu không đúng!</string>
     <string name="about_app"></string>
 
     <string name="menu_item_work_filter1">Làm mới</string>
