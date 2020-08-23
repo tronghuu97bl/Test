@@ -47,12 +47,23 @@
         android:layout_height="wrap_content"
         android:text="Account setting"/>
     <TextView
+
         style="@style/textBlack"
         android:layout_marginHorizontal="10dp"
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
         android:text="Change password"/>
+    <TextView
+        style="@style/textBlack"
+        android:id="@+id/text_changeSecret"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:text="Change secret password"/>
     <View
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"

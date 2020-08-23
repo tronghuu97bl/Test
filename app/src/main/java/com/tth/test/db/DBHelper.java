@@ -3,20 +3,18 @@ package com.tth.test.db;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-
 import com.tth.test.model.Note;
 import com.tth.test.model.Password;
 import com.tth.test.model.Work;
 import com.tth.test.model.Works;
 
+import java.net.PasswordAuthentication;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +45,7 @@ public class DBHelper extends SQLiteOpenHelper {
     //table password _ mat khau bao ve note
     private  static final String TABLE_PASSWORD_NAME = "password";
     private static final String PASS_ID = "pass_id";
+    private static final String PASS_NAME = "pass_name";
     private static final String PASSWORD = "pass_word";
     public DBHelper(Context context) {
         super(context, DATABASE_NAM, null, DATABASE_VERSION);
@@ -78,11 +77,12 @@ public class DBHelper extends SQLiteOpenHelper {
                 WORKS_CHECK + "INTEGER)";
         db.execSQL(query);
         //add table password
-//        query = "CREATE TABLE " + TABLE_PASSWORD_NAME +"(" +
-//                PASS_ID +" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-//                PASSWORD + "TEXT)";
-//        db.execSQL(query);
-    }
+        query = "CREATE TABLE " + TABLE_PASSWORD_NAME +"( " +
+                PASS_ID +" INTEGER PRIMARY KEY, "+
+                PASS_NAME + " TEXT, "+
+                PASSWORD + " TEXT)";
+        db.execSQL(query);
+}
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
@@ -131,19 +131,57 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
     //add pass
-//    public void addPass(Password password){
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues cv = new ContentValues();
-//        cv.put(PASSWORD, password.getPassword());
-//        long result = db.insert(TABLE_PASSWORD_NAME, null, cv);
-//        if(result==-1){
-//            Toast.makeText(context, "Add password failed", Toast.LENGTH_LONG);
-//
-//        }
-//        else
-//            Toast.makeText(context, "Add password success", Toast.LENGTH_LONG);
-//        db.close();
-//    }
+    public void addPass(Password password){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(PASS_ID, password.getPasswordid());
+        cv.put(PASSWORD, password.getPassword());
+        cv.put(PASS_NAME, password.getName());
+        db.insert(TABLE_PASSWORD_NAME, null, cv);
+        db.close();
+    }
+    public Password getPassword(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(
+                TABLE_PASSWORD_NAME, new String[]{PASS_ID, PASSWORD, PASS_NAME},
+                PASS_ID + "=?",
+                new String[]{String.valueOf(id)}, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+        Password password = new Password(
+                Integer.parseInt(cursor.getString(0)),
+                cursor.getString(1),
+                cursor.getString(2));
+        db.close();
+        return password;
+    }
+    public int updatePass(Password password){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(PASS_ID, password.getPasswordid());
+        cv.put(PASSWORD, password.getPassword());
+        cv.put(PASS_NAME, password.getName());
+        // updating row
+        return db.update(TABLE_PASSWORD_NAME, cv, PASS_ID + " = ?",
+                new String[]{String.valueOf(password.getPasswordid())});
+    }
+    public void createDefaultPasswordIfNeed() {
+        int count = this.getPasswordCount();
+        if(count ==0) {
+            Password pass = new Password(1, "123","admin");
+            this.addPass(pass);
+        }
+    }
+    public int getPasswordCount() {
+        String countQuery = "SELECT  * FROM " + TABLE_PASSWORD_NAME;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
+        cursor.close();
+        db.close();
+        return count;
+    }
+
 
     public Note getNote(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -200,21 +238,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return works;
     }
     //
-//    public Password getPassword(int id){
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        Cursor cursor = db.query(
-//                TABLE_PASSWORD_NAME, new String[]{PASS_ID, PASSWORD},
-//                PASS_ID + "=?",
-//                new String[]{String.valueOf(id)}, null, null, null,null);
-//        if (cursor!=null)
-//            cursor.moveToFirst();
-//        Password password = new Password(
-//                Integer.parseInt(cursor.getString(0)),
-//                cursor.getString(1));
-//                db.close();
-//                return password;
-//
-//    }
+
 
     public List<Note> getAllNotes() {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -376,6 +400,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 new String[]{String.valueOf(works.getWorksid())});
     }
 
+
     public void deleteNote(Note note) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NOTE_NAME, NOTE_ID + " = ?",
@@ -416,7 +441,6 @@ public class DBHelper extends SQLiteOpenHelper {
             this.addNote(note2);
         }
     }
-
     public void createDefaultWorkIfNeed() {
         int count = this.getWorkCount();
         if (count == 0) {

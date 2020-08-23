@@ -35,6 +35,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tth.test.model.Password;
 import com.tth.test.model.Work;
 import com.tth.test.ui.personal.SecureFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -65,6 +66,7 @@ public class NoteFragment extends Fragment {
     ConstraintLayout layout;
     boolean click = true;
     RecyclerView recyclerView = null;
+    Password pass;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -121,7 +123,10 @@ public class NoteFragment extends Fragment {
         int numberOfColumns = 2;
         recyclerView = view.findViewById(R.id.rcv_note);
         recyclerView.setHasFixedSize(true);
-
+        // kb password
+        dbHelper.createDefaultPasswordIfNeed();
+        pass = dbHelper.getPassword(1);
+      Log.d("Password", pass.getPassword());
         // add btn
         FloatingActionButton add_button = view.findViewById(R.id.add_button);
         FloatingActionButton secure_button = view.findViewById(R.id.secure_button);
@@ -132,14 +137,6 @@ public class NoteFragment extends Fragment {
             public void onClick(View view) {
                 showPopUpWindow(view);
 
-               
-            }
-        });
-        secure_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("He", "click secure");
-
             }
         });
         noteAdapter = new NoteAdapter(getContext(), note);
@@ -148,6 +145,7 @@ public class NoteFragment extends Fragment {
         secure_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 recyclerView.removeAllViewsInLayout();
                 onButtonShowPopupWindowClick(view);
             }
@@ -183,15 +181,6 @@ public class NoteFragment extends Fragment {
         }
         //show popup window
         //which view you pass in doesn't matter, it is only used for the windeow tolken
-
-        //dissmiss the popup window when touch
-        popupView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                popupWindow.dismiss();
-                return true;
-            }
-        });
         //tao bong
     if(Build.VERSION.SDK_INT >=Build.VERSION_CODES.LOLLIPOP){
         popupWindow.setElevation(20);
@@ -202,13 +191,13 @@ public class NoteFragment extends Fragment {
     enter.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (password.getText().toString().equals("123")){
+           Log.d("Quynh", "check");
+
+            if (password.getText().toString().equals(pass.getPassword())){
                 password.setText("Mat khau chinh xac");
                 note.clear();
                 note = dbHelper.getAllSecure();
                 recyclerView.setAdapter(new NoteAdapter(getActivity(), note));
-
-                Log.d("PassWord","password 6");
 
             }
             else {
@@ -219,7 +208,14 @@ public class NoteFragment extends Fragment {
 
         }
     });
-
+        //dissmiss the popup window when touch
+        popupView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                popupWindow.dismiss();
+                return true;
+            }
+        });
     }
     public void showPopUpWindow(final View view) {
         LayoutInflater layoutInflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
